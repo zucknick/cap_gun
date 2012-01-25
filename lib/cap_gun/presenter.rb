@@ -57,9 +57,9 @@ module CapGun
     def scm_log_messages
       messages = case capistrano[:scm].to_sym
         when :git
-          `git log #{previous_revision}..#{capistrano[:current_revision]} --pretty=format:%h:%s`
+          `git log #{previous_revision}..#{capistrano[:current_revision]} --stat`
         when :subversion
-          `svn log -r #{previous_revision.to_i+1}:#{capistrano[:current_revision]}`
+          `svn log -r #{previous_revision.to_i+1}:#{capistrano[:current_revision]} -v`
         else
           "N/A"
       end
@@ -120,6 +120,8 @@ module CapGun
 
     def body
 <<-EOL
+#{scm_details}
+
 #{summary}
 #{comment}
 Deployment details
@@ -134,8 +136,6 @@ Previous Release Revision: #{previous_revision}
 
 Repository: #{capistrano[:repository]}
 Deploy path: #{capistrano[:deploy_to]}
-Domain: #{capistrano[:domain]}
-#{scm_details}
 EOL
     end
 
